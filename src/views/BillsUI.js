@@ -20,6 +20,10 @@ const row = (bill) => {
   }
 
 const rows = (data) => {
+  if(data) {
+    data.sort((a,b)=> b.date.replace(/-/g, "") - a.date.replace(/-/g, ""));
+  }
+
   return (data && data.length) ? data.map(bill => row(bill)).join("") : ""
 }
 
