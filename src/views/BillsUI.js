@@ -20,7 +20,7 @@ const row = (bill) => {
   }
 
 const rows = (data) => {
-  if(data) {
+  if(data && data.length > 1) {
     data.sort((a,b)=> b.date.replace(/-/g, "") - a.date.replace(/-/g, ""));
   }
 
@@ -30,7 +30,7 @@ const rows = (data) => {
 export default ({ data: bills, loading, error }) => {
   
   const modal = () => (`
-    <div class="modal fade" id="modaleFile" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal fade" data-testid="view-modal" id="modaleFile" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
         <div class="modal-content">
           <div class="modal-header">
