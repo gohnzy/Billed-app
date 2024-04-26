@@ -58,7 +58,7 @@ export default class {
               }
             }
           })
-          console.log('length', bills.length, bills)
+          // console.log('length', bills.length, bills)
         return bills
       })
     }

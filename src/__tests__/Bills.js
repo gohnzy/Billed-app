@@ -43,8 +43,8 @@ function newBillClick() {
 }
 
 describe("Given I am connected as an employee", () => {
-  describe("When I am on Bills Page", () => {
 
+  describe("When I am on Bills Page", () => {
 
     test("Then bill icon in vertical layout should be highlighted", async () => {
 
@@ -72,37 +72,7 @@ describe("Given I am connected as an employee", () => {
       expect(dates).toEqual(datesSorted)
     })
 
-
-    test("Then new bill button click should change page to new bill page", async () => {
-      const root = document.createElement("div")
-      root.setAttribute("id", "root")
-      document.body.append(root)
-      router()
-      expect(location.href).toEqual("http://localhost/#employee/bills")
-      const btn = screen.getByTestId("btn-new-bill");
-      userEvent.click(btn)
-      expect(location.href).toEqual("http://localhost/#employee/bill/new")
-
-    })
-
-
-    test("Then view icon click should display modal", async () => {
-
-      Object.defineProperty(window, 'localStorage', { value: localStorageMock });
-      window.localStorage.setItem('user', JSON.stringify({ type: 'Employee' }));
-      const html = BillsUI({ data: bills });
-      document.body.innerHTML = html;
-      window.$ = require('jquery');
-      const billsContainer = new Bills({});
-      const modale = screen.getByTestId("view-modal");
-      expect(modale).not.toHaveClass('show');
-      const btn = screen.getAllByTestId("icon-eye");
-      userEvent.click(btn[0], billsContainer.handleClickIconEye(btn[0]));
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      expect(modale).toHaveClass('show');
-    });
-
-    test("GGG", async () => {
+    test("Then all bills must be shown", async () => {
       const root = document.createElement("div")
       root.setAttribute("id", "root")
       document.body.append(root)
@@ -123,6 +93,37 @@ describe("Given I am connected as an employee", () => {
 
       expect(billsResult.length).toEqual(bills.length)
   
+    })
+
+    describe("When I click on new bill button", () => {
+      test("Then page should change to new bill page", async () => {
+        const root = document.createElement("div")
+        root.setAttribute("id", "root")
+        document.body.append(root)
+        router()
+        expect(location.href).toEqual("http://localhost/#employee/bills")
+        const btn = screen.getByTestId("btn-new-bill");
+        userEvent.click(btn)
+        expect(location.href).toEqual("http://localhost/#employee/bill/new")
+
+      })
+    })
+    describe("When I click on view action button", () => {
+      test("Then modal should be shown", async () => {
+
+        Object.defineProperty(window, 'localStorage', { value: localStorageMock });
+        window.localStorage.setItem('user', JSON.stringify({ type: 'Employee' }));
+        const html = BillsUI({ data: bills });
+        document.body.innerHTML = html;
+        window.$ = require('jquery');
+        const billsContainer = new Bills({});
+        const modale = screen.getByTestId("view-modal");
+        expect(modale).not.toHaveClass('show');
+        const btn = screen.getAllByTestId("icon-eye");
+        userEvent.click(btn[0], billsContainer.handleClickIconEye(btn[0]));
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        expect(modale).toHaveClass('show');
+      });
     })
   })
 })
