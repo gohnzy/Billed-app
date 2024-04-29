@@ -72,22 +72,18 @@ export default class {
     this.document = document
     this.onNavigate = onNavigate
     this.store = store
-    $('#arrow-icon1').click((e) => this.handleShowTickets(e, bills, 1))
-    const firstList = cards(filteredBills(bills, getStatus(1)))
-    $(`#status-bills-container${1}`).html(firstList);
-    $(`#status-bills-container${1}`).css({display : 'none'})
-    $('#arrow-icon2').click((e) => this.handleShowTickets(e, bills, 2))
-    const secondList = cards(filteredBills(bills, getStatus(2)))
-    $(`#status-bills-container${2}`).html(secondList);
-    $(`#status-bills-container${2}`).css({display : 'none'})
-    $('#arrow-icon3').click((e) => this.handleShowTickets(e, bills, 3))
-    const thirdList = cards(filteredBills(bills, getStatus(3)))
-    $(`#status-bills-container${3}`).html(thirdList);
-    $(`#status-bills-container${3}`).css({display : 'none'})
-    bills.forEach(bill => {
-      $(`#open-bill${bill.id}`).click((e) => this.handleEditTicket(e, bill, bills))
-    })
-
+    $('#arrow-icon1').on('click', function(e) {
+      this.handleShowTickets(e, bills, 1);
+      this.attachListeners(bills);
+    }.bind(this));
+    $('#arrow-icon2').on('click', function(e) {
+      this.handleShowTickets(e, bills, 2);
+      this.attachListeners(bills);
+    }.bind(this));
+    $('#arrow-icon3').on('click', function(e) {
+      this.handleShowTickets(e, bills, 3);
+      this.attachListeners(bills);
+    }.bind(this));
     new Logout({ localStorage, onNavigate })
   }
 
@@ -143,40 +139,34 @@ export default class {
     this.onNavigate(ROUTES_PATH['Dashboard'])
   }
 
-  // handleShowTickets(e, bills, index) {
+  handleShowTickets(e, bills, index) {
     
-  //   if (this.counter === undefined || this.index !== index) this.counter = 0
-  //   if (this.index === undefined || this.index !== index) this.index = index
-  //   if (this.counter % 2 === 0) {
-  //     $(`#arrow-icon${this.index}`).css({ transform: 'rotate(0deg)'})
-  //     $(`#status-bills-container${this.index}`)
-  //       .html(cards(filteredBills(bills, getStatus(this.index))))
-  //     this.counter ++
-  //   } else {
-  //     $(`#arrow-icon${this.index}`).css({ transform: 'rotate(90deg)'})
-  //     $(`#status-bills-container${this.index}`)
-  //       .html("")
-  //     this.counter ++
-  //   }
-  //   bills.forEach(bill => {
-  //     $(`#open-bill${bill.id}`).click((e) => this.handleEditTicket(e, bill, bills))
-  //   })
-  // }
-  
- handleShowTickets(e, bills, index) {
-    if (this.index === undefined || this.index !== index) {
-      this.index = index
-    }
-    if (!$(`#arrow-icon${this.index}`).hasClass("opened-list")) {
-      $(`#arrow-icon${this.index}`).addClass("opened-list")
+    if (this.counter === undefined || this.index !== index) this.counter = 0
+    if (this.index === undefined || this.index !== index) this.index = index
+    if (this.counter % 2 === 0) {
       $(`#arrow-icon${this.index}`).css({ transform: 'rotate(0deg)'})
-      $(`#status-bills-container${this.index}`).css({display : 'block'})
+      $(`#status-bills-container${this.index}`)
+        .html(cards(filteredBills(bills, getStatus(this.index))))
+      this.counter ++
     } else {
-      $(`#arrow-icon${this.index}`).removeClass("opened-list")
       $(`#arrow-icon${this.index}`).css({ transform: 'rotate(90deg)'})
-      $(`#status-bills-container${this.index}`).css({display : 'none'})
+      $(`#status-bills-container${this.index}`)
+        .html("")
+      this.counter ++
     }
+    
   }
+
+  attachListeners = async (bills) => {
+
+    bills.forEach(bill => {
+      $(`#open-bill${bill.id}`).off("click")
+    })
+    bills.forEach(bill => {
+      $(`#open-bill${bill.id}`).click((e) => this.handleEditTicket(e, bill, bills))
+    })
+  }
+
   getBillsAllUsers = () => {
     if (this.store) {
       return this.store
