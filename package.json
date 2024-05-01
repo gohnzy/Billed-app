@@ -1,7 +1,8 @@
 {
   "scripts": {
     "test": "jest",
-    "coverage": "jest --coverage"
+    "coverage": "jest --coverage",
+    "live": "live-server"
   },
   "jest": {
     "verbose": false,
@@ -25,6 +26,7 @@
     "global": "4.4.0",
     "jquery": "3.7.1",
     "jquery-ui": "1.13.2",
+    "live-server": "^1.2.2",
     "path": "0.12.7"
   },
   "devDependencies": {
