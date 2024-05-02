@@ -1,7 +1,7 @@
 /**
  * @jest-environment jsdom
  */
-import $ from "jquery"
+import $, { error } from "jquery"
 import 'bootstrap'
 import {fireEvent, screen, waitFor} from "@testing-library/dom"
 import BillsUI from "../views/BillsUI.js"
@@ -11,36 +11,11 @@ import { ROUTES, ROUTES_PATH} from "../constants/routes.js";
 import { localStorageMock } from "../__mocks__/localStorage.js";
 import router from "../app/Router.js";
 import userEvent from "@testing-library/user-event";
-import { toHaveClass } from "@testing-library/jest-dom/matchers.js";
-import Store from "../app/Store.js"
+import { toHaveClass, toBeInTheDocument } from "@testing-library/jest-dom/matchers.js";
 import store from "../__mocks__/store.js"
+import corruptedBill from "../__mocks__/corruptedBill.js"
 
-expect.extend({ toHaveClass });
-
-function clickView(icon) {
-  const billUrl = icon.getAttribute("data-bill-url")
-  const imgWidth = Math.floor($('#modaleFile').width() * 0.5)
-  $('#modaleFile').find(".modal-body").html(`<div style='text-align: center;' class="bill-proof-container"><img width=${imgWidth} src=${billUrl} alt="Bill" /></div>`)
-  $('#modaleFile').modal('show')
-}
-
-function viewListener() {
-  const bouton = document.querySelectorAll("#eye");
-
-  bouton.forEach(b=> {
-    b.addEventListener("click", clickView(b))
-  })
-}
-
-function newListener() {
-  const bouton = screen.getByTestId("btn-new-bill");
-
-  bouton.addEventListener("click", newBillClick)
-}
-
-function newBillClick() {
-  onNavigate(ROUTES_PATH['NewBill'])
-}
+expect.extend({ toHaveClass, toBeInTheDocument });
 
 describe("Given I am connected as an employee", () => {
 
@@ -124,6 +99,52 @@ describe("Given I am connected as an employee", () => {
         await new Promise(resolve => setTimeout(resolve, 1000));
         expect(modale).toHaveClass('show');
       });
+    })
+
+    describe("When I click on vertical mail icon", () => {
+      test("Then I should move to new bill page", async () => {
+        window.onNavigate(ROUTES_PATH.Bills)
+
+        document.body.innerHTML = ""
+        const root = document.createElement("div")
+        root.setAttribute("id", "root")
+        document.body.append(root)
+        router()
+        expect(location.hash).toEqual("#employee/bills")
+        const verticalButton = screen.getByTestId("icon-mail")
+        userEvent.click(verticalButton)
+        await waitFor(()=>{expect(location.hash).toEqual("#employee/bill/new")})
+      })
+    })
+
+    describe("If corrupted datas are introduced", () => {
+      test("Then error should be thrown", async () => {
+        window.onNavigate(ROUTES_PATH.Bills)
+
+        document.body.innerHTML = ""
+        const root = document.createElement("div")
+        root.setAttribute("id", "root")
+        document.body.append(root)
+        router()
+
+        const consoleErrorSpy = jest.spyOn(console, 'log')
+
+        const billsContainer = new Bills({
+          document,
+          onNavigate,
+          store: corruptedBill,
+          localStorage: localStorageMock
+        });
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        billsContainer.getBills()
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // const stringToCheck = () => {
+        //   if(consoleErrorSpy.includes("RangeError:")) return true
+        //   else return false 
+        // }
+        expect(consoleErrorSpy).toHaveBeenCalledWith(expect.any(RangeError), "for", {"id": "billCorrupted", "date": "avion"})
+      })
     })
   })
 })

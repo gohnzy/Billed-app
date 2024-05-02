@@ -6,6 +6,8 @@ export default class NewBill {
     this.document = document
     this.onNavigate = onNavigate
     this.store = store
+    const verticalButtonDash = document.getElementById('layout-icon1')
+    if (verticalButtonDash) verticalButtonDash.addEventListener('click', this.handleClickDashboard)
     const formNewBill = this.document.querySelector(`form[data-testid="form-new-bill"]`)
     formNewBill.addEventListener("submit", this.handleSubmit)
     const file = this.document.querySelector(`input[data-testid="file"]`)
@@ -15,7 +17,12 @@ export default class NewBill {
     this.billId = null
     new Logout({ document, localStorage, onNavigate })
   }
-handleChangeFile = e => {
+
+  handleClickDashboard = () => {
+    this.onNavigate(ROUTES_PATH['Bills'])
+  }
+
+  handleChangeFile = e => {
     e.preventDefault();
     const fileInput = document.querySelector(`input[data-testid="file"]`);
     const file = fileInput.files[0];
