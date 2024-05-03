@@ -14,6 +14,8 @@ import userEvent from "@testing-library/user-event";
 import { toHaveClass, toBeInTheDocument } from "@testing-library/jest-dom/matchers.js";
 import store from "../__mocks__/store.js"
 import corruptedBill from "../__mocks__/corruptedBill.js"
+import Login, { PREVIOUS_LOCATION } from "../containers/Login.js"
+
 
 expect.extend({ toHaveClass, toBeInTheDocument });
 
@@ -117,7 +119,7 @@ describe("Given I am connected as an employee", () => {
       })
     })
 
-    describe("If corrupted datas are introduced", () => {
+    describe("When corrupted datas are introduced", () => {
       test("Then error should be thrown", async () => {
         window.onNavigate(ROUTES_PATH.Bills)
 
@@ -139,10 +141,6 @@ describe("Given I am connected as an employee", () => {
         billsContainer.getBills()
         await new Promise(resolve => setTimeout(resolve, 1000));
         
-        // const stringToCheck = () => {
-        //   if(consoleErrorSpy.includes("RangeError:")) return true
-        //   else return false 
-        // }
         expect(consoleErrorSpy).toHaveBeenCalledWith(expect.any(RangeError), "for", {"id": "billCorrupted", "date": "avion"})
       })
     })

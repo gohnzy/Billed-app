@@ -6,4 +6,5 @@ module.exports = {
       '^jquery$': 'jquery/dist/jquery.slim.js'
     },
     testEnvironment: 'jsdom',
+
   };
