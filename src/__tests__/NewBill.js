@@ -44,5 +44,39 @@ describe("Given I am connected as an employee", () => {
         await waitFor(()=>{expect(location.hash).toEqual("#employee/bills")})
       })
     })
+    describe("When new bill form is filled correctly and I click on send", () => {
+      test("Then I should be sent back to bills page", async () => {
+        window.onNavigate(ROUTES_PATH.NewBill)
+        const dateField = screen.getByTestId("datepicker")
+        const amountField = screen.getByTestId("amount")
+        const fileInput = screen.getByTestId("file")
+        expect(location.hash).toEqual("#employee/bill/new")
+      })
+    })
+    describe("When new bill form is filled without date and I click on send", () => {
+      test("Then I should stay on the new bill page", async () => {
+        
+      })
+    })
+    describe("When new bill form is filled without file and I click on send", () => {
+      test("Then I should stay on the new bill page", async () => {
+        
+      })
+    })
+    describe("When new bill form is filled with a wrong file type and I click on send", () => {
+      test("Then I should stay on the new bill page and prompt appears", async () => {
+        
+      })
+    })
+    describe("When new bill form is filled without price and I click on send", () => {
+      test("Then I should stay on the new bill page", async () => {
+        
+      })
+    })
+    describe("When new bill form is filled without VAT % and I click on send", () => {
+      test("Then I should stay on the new bill page", async () => {
+        
+      })
+    })
   })
 })
