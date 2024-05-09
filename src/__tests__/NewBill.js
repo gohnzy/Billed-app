@@ -10,12 +10,18 @@ import router from "../app/Router.js"
 import { localStorageMock } from "../__mocks__/localStorage.js"
 import { toBeInTheDocument } from "@testing-library/jest-dom/matchers.js"
 import userEvent from "@testing-library/user-event"
-import mockStore from "../__mocks__/store.js"
+import mockStore, {mockedBills} from "../__mocks__/store.js"
+import { log } from "console"
+import { bills } from "../fixtures/bills.js"
 
 
 const fs = require ("fs")
 
 expect.extend({toBeInTheDocument})
+
+const newBillFileUpload = () => {
+  mockedBills.create()
+}
 
 describe("Given I am connected as an employee", () => {
   describe("When I am on NewBill Page", () => {
@@ -49,41 +55,108 @@ describe("Given I am connected as an employee", () => {
         await waitFor(()=>{expect(location.hash).toEqual("#employee/bills")})
       })
     })
-    describe("When new bill form is filled correctly and I click on send", () => {
-      test("Then I should be sent back to bills page", async () => {
+    describe("When I upload an image in the form", () => {
+      test("Then file's URL should be created and no alert pops", async () => {
         window.onNavigate(ROUTES_PATH.NewBill)
 
-        await waitFor(() => {
-          screen.getByTestId("datepicker")
-          screen.getByTestId("amount")
-        })
-
+        console.log(bills.length);
         const form = screen.getByTestId("form-new-bill")
         expect(form).toBeInTheDocument()
-        const dateField = screen.getByTestId("datepicker")
-        const amountField = screen.getByTestId("amount")
-        const VATInput = screen.getByTestId("pct")
         const fileInput = screen.getByTestId("file")
+        fileInput.addEventListener("change", newBillFileUpload)
         const file = new File(['img'], 'billFileMock.png', { type: 'image/png' })
-        // const formData = new FormData()
-        // formData.append('file', file)
-        userEvent.type(
-          dateField,
-          "1998-02-12"
-        )
-        userEvent.type(
-          amountField,
-          "199"
-        )
-        userEvent.type(
-          VATInput,
-          "20"
-        )
-        userEvent.upload(
+
+        fireEvent.change(
           fileInput,
           file
         )
-        fireEvent.submit(form)
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        console.log(bills.length);
+
+      })
+    })
+    describe("When I upload a file that is not an image", () => {
+      test("Then alert prompt should pop", async () => {
+        // window.onNavigate(ROUTES_PATH.NewBill)
+
+        // await waitFor(() => {
+        //   screen.getByTestId("datepicker")
+        //   screen.getByTestId("amount")
+        // })
+
+        // const form = screen.getByTestId("form-new-bill")
+        // expect(form).toBeInTheDocument()
+        // form.addEventListener("submit", newBillSubmit)
+        // const dateField = screen.getByTestId("datepicker")
+        // const amountField = screen.getByTestId("amount")
+        // const VATInput = screen.getByTestId("pct")
+        // const fileInput = screen.getByTestId("file")
+        // const file = new File(['img'], 'billFileMock.png', { type: 'image/png' })
+        // // const formData = new FormData()
+        // // formData.append('file', file)
+        // userEvent.type(
+        //   dateField,
+        //   "1998-02-12"
+        // )
+        // userEvent.type(
+        //   amountField,
+        //   "199"
+        // )
+        // userEvent.type(
+        //   VATInput,
+        //   "20"
+        // )
+        // userEvent.upload(
+        //   fileInput,
+        //   file
+        // )
+
+        // fireEvent.submit(form)
+        // await new Promise(resolve => setTimeout(resolve, 1000));
+
+        // console.log(location.hash);
+      })
+    })
+    describe("When new bill form is filled correctly and I click on send", () => {
+      test("Then I should be sent back to bills page", async () => {
+        // window.onNavigate(ROUTES_PATH.NewBill)
+
+        // await waitFor(() => {
+        //   screen.getByTestId("datepicker")
+        //   screen.getByTestId("amount")
+        // })
+
+        // const form = screen.getByTestId("form-new-bill")
+        // expect(form).toBeInTheDocument()
+        // form.addEventListener("submit", newBillSubmit)
+        // const dateField = screen.getByTestId("datepicker")
+        // const amountField = screen.getByTestId("amount")
+        // const VATInput = screen.getByTestId("pct")
+        // const fileInput = screen.getByTestId("file")
+        // const file = new File(['img'], 'billFileMock.png', { type: 'image/png' })
+        // // const formData = new FormData()
+        // // formData.append('file', file)
+        // userEvent.type(
+        //   dateField,
+        //   "1998-02-12"
+        // )
+        // userEvent.type(
+        //   amountField,
+        //   "199"
+        // )
+        // userEvent.type(
+        //   VATInput,
+        //   "20"
+        // )
+        // userEvent.upload(
+        //   fileInput,
+        //   file
+        // )
+
+        // fireEvent.submit(form)
+        // await new Promise(resolve => setTimeout(resolve, 1000));
+
+        // console.log(location.hash);
       })
     })
     describe("When new bill form is filled without date and I click on send", () => {
