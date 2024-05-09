@@ -3,11 +3,13 @@ import Logout from "./Logout.js"
 
 export default class NewBill {
   constructor({ document, onNavigate, store, localStorage }) {
+    this.formData = new FormData()
     this.document = document
     this.onNavigate = onNavigate
     this.store = store
+    this.userEmail = null
     const verticalButtonDash = document.getElementById('layout-icon1')
-    if (verticalButtonDash) verticalButtonDash.addEventListener('click', this.handleClickWindows)
+    if (verticalButtonDash) verticalButtonDash.addEventListener('click', this.handleClickWindowsIcon)
     const formNewBill = this.document.querySelector(`form[data-testid="form-new-bill"]`)
     formNewBill.addEventListener("submit", this.handleSubmit)
     const file = this.document.querySelector(`input[data-testid="file"]`)
@@ -18,7 +20,7 @@ export default class NewBill {
     new Logout({ document, localStorage, onNavigate })
   }
 
-  handleClickWindows = () => {
+  handleClickWindowsIcon = () => {
     this.onNavigate(ROUTES_PATH['Bills'])
   }
 
@@ -28,31 +30,15 @@ export default class NewBill {
     const file = fileInput.files[0];
     if (!file) return; // No file selected
 
-    const fileName = file.name;
-    const formData = new FormData();
+    this.fileName = file.name;
     const user = JSON.parse(localStorage.getItem("user"));
-    const email = user ? user.email : null;
+    this.userEmail = user ? user.email : null;
     if (file.type === 'image/png' || file.type === 'image/jpg' || file.type === 'image/jpeg') {
-      formData.append('file', file);
-      formData.append('email', email);
+      this.formData.append('file', file);
+      this.formData.append('email', this.userEmail);
     } else {
-      console.log("Le fichier: ", file.name, "est de type ", file.type)
+      alert("Le justificatif doit être une image (formats png, jpg ou jpeg uniquements)");
     }
-
-    this.store
-      .bills()
-      .create({
-        data: formData,
-        headers: {
-          noContentType: true
-        }
-      })
-      .then(({filePath, key}) => {
-        console.log(filePath)
-        this.billId = key
-        this.fileUrl = filePath
-        this.fileName = fileName
-      }).catch(error => console.error(error))
   }
   handleSubmit = e => {
     e.preventDefault()
@@ -60,22 +46,28 @@ export default class NewBill {
     const file = fileInput.files[0];    
     if (file.type === 'image/png' || file.type === 'image/jpg' || file.type === 'image/jpeg') {
       console.log('e.target.querySelector(`input[data-testid="datepicker"]`).value', e.target.querySelector(`input[data-testid="datepicker"]`).value)
-      const email = JSON.parse(localStorage.getItem("user")).email
-      const bill = {
-        email,
-        type: e.target.querySelector(`select[data-testid="expense-type"]`).value,
-        name:  e.target.querySelector(`input[data-testid="expense-name"]`).value,
-        amount: parseInt(e.target.querySelector(`input[data-testid="amount"]`).value),
-        date:  e.target.querySelector(`input[data-testid="datepicker"]`).value,
-        vat: e.target.querySelector(`input[data-testid="vat"]`).value,
-        pct: parseInt(e.target.querySelector(`input[data-testid="pct"]`).value) || 20,
-        commentary: e.target.querySelector(`textarea[data-testid="commentary"]`).value,
-        fileUrl: this.fileUrl,
-        fileName: this.fileName,
-        status: 'pending'
-      }
-      this.updateBill(bill)
-      this.onNavigate(ROUTES_PATH['Bills'])
+      this.formData.append('type', e.target.querySelector(`select[data-testid="expense-type"]`).value);
+      this.formData.append('name', e.target.querySelector(`input[data-testid="expense-name"]`).value);
+      this.formData.append('amount', parseInt(e.target.querySelector(`input[data-testid="amount"]`).value));
+      this.formData.append('date', e.target.querySelector(`input[data-testid="datepicker"]`).value);
+      this.formData.append('vat', e.target.querySelector(`input[data-testid="vat"]`).value);
+      this.formData.append('pct', parseInt(e.target.querySelector(`input[data-testid="pct"]`).value) || 20);
+      this.formData.append('commentary', e.target.querySelector(`textarea[data-testid="commentary"]`).value);
+      this.formData.append('fileUrl', this.fileUrl);
+      this.formData.append('fileName', this.fileName);
+      this.formData.append('status', 'pending');
+
+      this.store
+      .bills()
+      .create({
+        data: this.formData,
+        headers: {
+          noContentType: true
+        }
+      })
+      .then(() => {
+        this.onNavigate(ROUTES_PATH['Bills'])
+      }).catch(error => console.error(error))
     } else { 
         alert("Le justificatif doit être une image (format png, jpg ou jpeg uniquement)");
     }

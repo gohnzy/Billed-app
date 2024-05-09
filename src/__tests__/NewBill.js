@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 
-import { fireEvent, screen, wait, waitFor } from "@testing-library/dom"
+import { fireEvent, screen, waitFor } from "@testing-library/dom"
 import NewBillUI from "../views/NewBillUI.js"
 import NewBill from "../containers/NewBill.js"
 import { ROUTES_PATH, ROUTES } from "../constants/routes.js"
@@ -10,8 +10,11 @@ import router from "../app/Router.js"
 import { localStorageMock } from "../__mocks__/localStorage.js"
 import { toBeInTheDocument } from "@testing-library/jest-dom/matchers.js"
 import userEvent from "@testing-library/user-event"
+import mockStore from "../__mocks__/store.js"
+
 
 const fs = require ("fs")
+
 expect.extend({toBeInTheDocument})
 
 describe("Given I am connected as an employee", () => {
@@ -49,6 +52,7 @@ describe("Given I am connected as an employee", () => {
     describe("When new bill form is filled correctly and I click on send", () => {
       test("Then I should be sent back to bills page", async () => {
         window.onNavigate(ROUTES_PATH.NewBill)
+
         await waitFor(() => {
           screen.getByTestId("datepicker")
           screen.getByTestId("amount")
@@ -75,7 +79,7 @@ describe("Given I am connected as an employee", () => {
           VATInput,
           "20"
         )
-        fireEvent.change(
+        userEvent.upload(
           fileInput,
           file
         )
