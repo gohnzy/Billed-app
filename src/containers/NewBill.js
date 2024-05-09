@@ -47,17 +47,18 @@ export default class NewBill {
           noContentType: true
         }
       })
-      .then(({fileUrl, key}) => {
-        console.log(fileUrl, fileName)
+      .then(({filePath, key}) => {
+        console.log(filePath)
         this.billId = key
-        this.fileUrl = fileUrl
+        this.fileUrl = filePath
         this.fileName = fileName
       }).catch(error => console.error(error))
   }
   handleSubmit = e => {
     e.preventDefault()
     const fileInput = document.querySelector(`input[data-testid="file"]`);
-    const file = fileInput.files[0];    if (file.type === 'image/png' || file.type === 'image/jpg' || file.type === 'image/jpeg') {
+    const file = fileInput.files[0];    
+    if (file.type === 'image/png' || file.type === 'image/jpg' || file.type === 'image/jpeg') {
       console.log('e.target.querySelector(`input[data-testid="datepicker"]`).value', e.target.querySelector(`input[data-testid="datepicker"]`).value)
       const email = JSON.parse(localStorage.getItem("user")).email
       const bill = {
