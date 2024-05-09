@@ -137,7 +137,9 @@ describe("Given I am connected as an employee", () => {
           store: corruptedBill,
           localStorage: localStorageMock
         });
-        await billsContainer.getBills()
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        billsContainer.getBills()
+        await new Promise(resolve => setTimeout(resolve, 1000));
         
         expect(consoleErrorSpy).toHaveBeenCalledWith(expect.any(RangeError), "for", {"id": "billCorrupted", "date": "avion"})
       })

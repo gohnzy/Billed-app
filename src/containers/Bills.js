@@ -39,12 +39,14 @@ export default class {
       .bills()
       .list()
       .then(snapshot => {
+        
         const bills = snapshot
           .map(doc => {
             try {
               return {
                 ...doc,
                 dateStyle: formatDate(doc.date),
+                date: doc.date,
                 status: formatStatus(doc.status)
               }
             } catch(e) {
@@ -61,5 +63,7 @@ export default class {
         return bills
       })
     }
+    
   }
 }
+
