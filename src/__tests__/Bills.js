@@ -111,7 +111,7 @@ describe("Given I am connected as an employee", () => {
         await new Promise(resolve => setTimeout(resolve, 1000));
         expect(modale).toHaveClass('show');
       });
-      describe("When modal is opened and I click on Escape key", () => {
+      describe("When modal is opened and I press Escape key", () => {
         test("Then modal should disappear", async () => {
      
         const modale = screen.getByTestId("view-modal");

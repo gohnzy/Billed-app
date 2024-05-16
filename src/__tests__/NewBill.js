@@ -51,30 +51,7 @@ describe("Given I am connected as an employee", () => {
       const form = screen.getByTestId("form-new-bill")
       expect(form).toBeInTheDocument()
     })
-
-    test.skip("Then I should be redirected to the Bills page", async () => {
-      const state1 = {page_id: 1, user_id: 1}
-      const state2 = {page_id: 2, user_id: 1}
-
-      window.onNavigate(ROUTES_PATH.Bills)
-      const hhh = createHashHistory()
-
-      hhh.push(ROUTES_PATH.Bills, state1)
-      await new Promise(resolve => setTimeout(resolve, 500));
-
-      window.onNavigate(ROUTES_PATH.Bills)
-
-      hhh.push(ROUTES_PATH.NewBill, state2)
-      await new Promise(resolve => setTimeout(resolve, 500));
-
-      window.onNavigate(ROUTES_PATH.NewBill)
-
-      hhh.back()
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
-      expect(location.hash).toEqual("#employee/bills");
-    });
-
+    
     describe("When I click on vertical windows icon", () => {
       test("Then I should move to bills page", async () => {
         window.onNavigate(ROUTES_PATH.NewBill)
