@@ -25,6 +25,7 @@
   },
   "type": "module",
   "dependencies": {
+    "@popperjs/core": "^2.11.8",
     "@types/jquery": "3.5.29",
     "bootstrap": "^5.3.3",
     "eslint": "^9.1.1",
@@ -32,10 +33,12 @@
     "fs": "^0.0.1-security",
     "global": "4.4.0",
     "history": "^5.3.0",
+    "jest-fetch-mock": "^3.0.3",
     "jquery": "3.7.1",
     "jquery-ui": "1.13.2",
     "live-server": "^1.2.2",
-    "path": "0.12.7"
+    "path": "0.12.7",
+    "popper.js": "^1.16.1"
   },
   "devDependencies": {
     "@babel/core": "7.24.4",

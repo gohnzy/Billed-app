@@ -163,7 +163,7 @@ describe('Given I am connected as an Admin', () => {
 
 describe('Given I am connected as Admin, and I am on Dashboard page, and I clicked on a pending bill', () => {
   describe('When I click on accept button', () => {
-    test('I should be sent on Dashboard with big billed icon instead of form', () => {
+    test('I should be sent on Dashboard with big billed icon instead of form', async () => {
       Object.defineProperty(window, 'localStorage', { value: localStorageMock })
       window.localStorage.setItem('user', JSON.stringify({
         type: 'Admin'
@@ -183,12 +183,14 @@ describe('Given I am connected as Admin, and I am on Dashboard page, and I click
       acceptButton.addEventListener("click", handleAcceptSubmit)
       fireEvent.click(acceptButton)
       expect(handleAcceptSubmit).toHaveBeenCalled()
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
       const bigBilledIcon = screen.queryByTestId("big-billed-icon")
       expect(bigBilledIcon).toBeTruthy()
     })
   })
   describe('When I click on refuse button', () => {
-    test('I should be sent on Dashboard with big billed icon instead of form', () => {
+    test('I should be sent on Dashboard with big billed icon instead of form', async () => {
       Object.defineProperty(window, 'localStorage', { value: localStorageMock })
       window.localStorage.setItem('user', JSON.stringify({
         type: 'Admin'
@@ -207,6 +209,7 @@ describe('Given I am connected as Admin, and I am on Dashboard page, and I click
       refuseButton.addEventListener("click", handleRefuseSubmit)
       fireEvent.click(refuseButton)
       expect(handleRefuseSubmit).toHaveBeenCalled()
+      await new Promise(resolve => setTimeout(resolve, 1000));
       const bigBilledIcon = screen.queryByTestId("big-billed-icon")
       expect(bigBilledIcon).toBeTruthy()
     })

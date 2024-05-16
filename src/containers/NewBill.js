@@ -28,7 +28,7 @@ export default class NewBill {
     e.preventDefault();
     const fileInput = document.querySelector(`input[data-testid="file"]`);
     const file = fileInput.files[0];
-    if (!file) return; // No file selected
+    if (!file) return;
 
     const user = JSON.parse(localStorage.getItem("user"));
     const email = user ? user.email : null;
@@ -38,39 +38,48 @@ export default class NewBill {
       this.formData.append('email', email);
     } else {
       console.log("Le fichier: ", file.name, "est de type ", file.type)
+      alert("Le justificatif doit être une image (format png, jpg ou jpeg uniquement)");
+
     }
     
   }
   handleSubmit = async e => {
     e.preventDefault()
+    
     const fileInput = document.querySelector(`input[data-testid="file"]`);
-    const file = fileInput.files[0];    
+    const file = fileInput.files[0];   
+    if (!file) return; 
     this.fileName = file.name
-    if (file.type === 'image/png' || file.type === 'image/jpg' || file.type === 'image/jpeg') {
- 
-      this.createBill(this.formData)
-      .then(() => {
-        const email = JSON.parse(localStorage.getItem("user")).email
-        const bill = {
-          email,
-          type: e.target.querySelector(`select[data-testid="expense-type"]`).value,
-          name:  e.target.querySelector(`input[data-testid="expense-name"]`).value,
-          amount: parseInt(e.target.querySelector(`input[data-testid="amount"]`).value),
-          date:  e.target.querySelector(`input[data-testid="datepicker"]`).value,
-          vat: e.target.querySelector(`input[data-testid="vat"]`).value,
-          pct: parseInt(e.target.querySelector(`input[data-testid="pct"]`).value) || 20,
-          commentary: e.target.querySelector(`textarea[data-testid="commentary"]`).value,
-          fileUrl: this.fileUrl,
-          fileName: this.fileName,
-          status: 'pending'
-        }
-        this.updateBill(bill)
-      })
-      
+    const dateRegExp = new RegExp(/^(19|20)\d\d[- /.](0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])$/i)
+    if (file.type === 'image/png' ||
+      file.type === 'image/jpg' ||
+      file.type === 'image/jpeg') {
+        if(e.target.querySelector(`input[data-testid="amount"]`).value !== "" &&
+          e.target.querySelector(`input[data-testid="pct"]`).value !== "" &&
+          dateRegExp.test(e.target.querySelector(`input[data-testid="datepicker"]`).value)) {
+            this.createBill(this.formData)
+            .then(() => {
+              const email = JSON.parse(localStorage.getItem("user")).email
+              const bill = {
+                email,
+                type: e.target.querySelector(`select[data-testid="expense-type"]`).value,
+                name:  e.target.querySelector(`input[data-testid="expense-name"]`).value,
+                amount: parseInt(e.target.querySelector(`input[data-testid="amount"]`).value),
+                date:  e.target.querySelector(`input[data-testid="datepicker"]`).value,
+                vat: e.target.querySelector(`input[data-testid="vat"]`).value,
+                pct: parseInt(e.target.querySelector(`input[data-testid="pct"]`).value) || 20,
+                commentary: e.target.querySelector(`textarea[data-testid="commentary"]`).value,
+                fileUrl: this.fileUrl,
+                fileName: this.fileName,
+                status: 'pending'
+              }
+              this.updateBill(bill)
+            })
+          }      
     } else { 
-        alert("Le justificatif doit être une image (format png, jpg ou jpeg uniquement)");
+      console.log("Le fichier: ", file.name, "est de type ", file.type)
+      alert("Le justificatif doit être une image (format png, jpg ou jpeg uniquement)");
     }
-
   }
 
   createBill = async (datas) => {

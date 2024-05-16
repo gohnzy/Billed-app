@@ -119,25 +119,34 @@ export default class {
     $('#btn-refuse-bill').click((e) => this.handleRefuseSubmit(e, bill))
   }
 
-  handleAcceptSubmit = (e, bill) => {
+  handleAcceptSubmit = async (e, bill) => {
     const newBill = {
       ...bill,
       status: 'accepted',
       commentAdmin: $('#commentary2').val()
-    }
-    this.updateBill(newBill)
-    this.onNavigate(ROUTES_PATH['Dashboard'])
-  }
-
-  handleRefuseSubmit = (e, bill) => {
+    };
+  
+    // Update the bill and wait for it to finish
+    await this.updateBill(newBill);
+  
+    // After updating the bill, navigate to the Dashboard
+    this.onNavigate(ROUTES_PATH['Dashboard']);
+  };
+  
+  handleRefuseSubmit = async (e, bill) => {
     const newBill = {
       ...bill,
       status: 'refused',
       commentAdmin: $('#commentary2').val()
-    }
-    this.updateBill(newBill)
-    this.onNavigate(ROUTES_PATH['Dashboard'])
-  }
+    };
+  
+    // Update the bill and wait for it to finish
+    await this.updateBill(newBill);
+  
+    // After updating the bill, navigate to the Dashboard
+    this.onNavigate(ROUTES_PATH['Dashboard']);
+  };
+  
 
   handleShowTickets(e, bills, index) {
     

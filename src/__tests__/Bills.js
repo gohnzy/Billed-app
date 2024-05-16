@@ -1,7 +1,6 @@
 /**
  * @jest-environment jsdom
  */
-import $, { error } from "jquery"
 import 'bootstrap'
 import {fireEvent, screen, waitFor} from "@testing-library/dom"
 import BillsUI from "../views/BillsUI.js"
@@ -9,13 +8,17 @@ import Bills from "../containers/Bills.js"
 import { bills } from "../fixtures/bills.js"
 import { ROUTES, ROUTES_PATH} from "../constants/routes.js";
 import { localStorageMock } from "../__mocks__/localStorage.js";
-import router from "../app/Router.js";
 import userEvent from "@testing-library/user-event";
 import { toHaveClass, toBeInTheDocument } from "@testing-library/jest-dom/matchers.js";
-import store from "../__mocks__/store.js"
+import mockStore from "../__mocks__/store.js"
 import corruptedBill from "../__mocks__/corruptedBill.js"
-import Login, { PREVIOUS_LOCATION } from "../containers/Login.js"
+import { createBrowserHistory } from 'history'
 
+
+import router from "../app/Router.js";
+import { Modal } from 'bootstrap'
+
+jest.mock("../app/store", () => mockStore)
 
 expect.extend({ toHaveClass, toBeInTheDocument });
 
@@ -58,7 +61,7 @@ describe("Given I am connected as an employee", () => {
       const billsContainer = new Bills({
         document,
         onNavigate,
-        store,
+        store: mockStore,
         localStorage: localStorageMock
       });
     
@@ -70,6 +73,16 @@ describe("Given I am connected as an employee", () => {
 
       expect(billsResult.length).toEqual(bills.length)
   
+    })
+
+    describe("When I click on back history browser's button", () => {
+      test("Then I should stay on bills page", async () => {
+        const hist = createBrowserHistory()
+        console.log(location.hash);
+        hist.back()
+        console.log(location.hash);
+
+      })
     })
 
     describe("When I click on new bill button", () => {
@@ -87,9 +100,6 @@ describe("Given I am connected as an employee", () => {
     })
     describe("When I click on view action button", () => {
       test("Then modal should be shown", async () => {
-
-        Object.defineProperty(window, 'localStorage', { value: localStorageMock });
-        window.localStorage.setItem('user', JSON.stringify({ type: 'Employee' }));
         const html = BillsUI({ data: bills });
         document.body.innerHTML = html;
         window.$ = require('jquery');
@@ -101,6 +111,20 @@ describe("Given I am connected as an employee", () => {
         await new Promise(resolve => setTimeout(resolve, 1000));
         expect(modale).toHaveClass('show');
       });
+      describe("When modal is opened and I click on Escape key", () => {
+        test("Then modal should disappear", async () => {
+     
+        const modale = screen.getByTestId("view-modal");
+        const closeBtn = screen.getByTestId("btn-close-modal");
+        expect(modale).toHaveClass('show');
+        expect(closeBtn).toBeInTheDocument();
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        fireEvent.keyDown(modale, {key: "Escape"})
+
+        expect(modale).not.toHaveClass('show')
+        
+        })
+      })
     })
 
     describe("When I click on vertical mail icon", () => {
@@ -142,6 +166,44 @@ describe("Given I am connected as an employee", () => {
         await new Promise(resolve => setTimeout(resolve, 1000));
         
         expect(consoleErrorSpy).toHaveBeenCalledWith(expect.any(RangeError), "for", {"id": "billCorrupted", "date": "avion"})
+      })
+    })
+    describe("When an error occurs on API", () => {
+      beforeEach(() => {
+        jest.spyOn(mockStore, "bills")
+        const root = document.createElement("div")
+        root.setAttribute("id", "root")
+        document.body.appendChild(root)
+        router()
+      })
+      test("fetches bills from an API and fails with 404 message error", async () => {
+  
+        mockStore.bills.mockImplementationOnce(() => {
+          return {
+            list : () =>  {
+              return Promise.reject(new Error("Erreur 404"))
+            }
+          }})
+          
+        window.onNavigate(ROUTES_PATH.Bills)
+        await new Promise(process.nextTick);
+        const message = await screen.getByText(/Erreur 404/)
+        expect(message).toBeTruthy()
+      })
+  
+      test("fetches messages from an API and fails with 500 message error", async () => {
+  
+        mockStore.bills.mockImplementationOnce(() => {
+          return {
+            list : () =>  {
+              return Promise.reject(new Error("Erreur 500"))
+            }
+          }})
+  
+        window.onNavigate(ROUTES_PATH.Bills)
+        await new Promise(process.nextTick);
+        const message = await screen.getByText(/Erreur 500/)
+        expect(message).toBeTruthy()
       })
     })
   })
