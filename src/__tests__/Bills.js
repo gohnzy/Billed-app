@@ -75,16 +75,6 @@ describe("Given I am connected as an employee", () => {
   
     })
 
-    describe("When I click on back history browser's button", () => {
-      test("Then I should stay on bills page", async () => {
-        const hist = createBrowserHistory()
-        console.log(location.hash);
-        hist.back()
-        console.log(location.hash);
-
-      })
-    })
-
     describe("When I click on new bill button", () => {
       test("Then page should change to new bill page", async () => {
         const root = document.createElement("div")
