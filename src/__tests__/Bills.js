@@ -98,17 +98,17 @@ describe("Given I am connected as an employee", () => {
         expect(modale).not.toHaveClass('show');
         const btn = screen.getAllByTestId("icon-eye");
         userEvent.click(btn[0], billsContainer.handleClickIconEye(btn[0]));
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        expect(modale).toHaveClass('show');
+        // await new Promise(resolve => setTimeout(resolve, 1000));
+        await waitFor(() => {expect(modale).toHaveClass('show')});
       });
       describe("When modal is opened and I press Escape key", () => {
         test("Then modal should disappear", async () => {
      
         const modale = screen.getByTestId("view-modal");
         const closeBtn = screen.getByTestId("btn-close-modal");
-        expect(modale).toHaveClass('show');
+        await waitFor(()=>{expect(modale).toHaveClass('show')});
         expect(closeBtn).toBeInTheDocument();
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        await new Promise(resolve => setTimeout(resolve, 100));
         fireEvent.keyDown(modale, {key: "Escape"})
 
         expect(modale).not.toHaveClass('show')
@@ -151,11 +151,11 @@ describe("Given I am connected as an employee", () => {
           store: corruptedBill,
           localStorage: localStorageMock
         });
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        // await new Promise(resolve => setTimeout(resolve, 1000));
         billsContainer.getBills()
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        // await new Promise(resolve => setTimeout(resolve, 1000));
         
-        expect(consoleErrorSpy).toHaveBeenCalledWith(expect.any(RangeError), "for", {"id": "billCorrupted", "date": "avion"})
+        await waitFor(() => {expect(consoleErrorSpy).toHaveBeenCalledWith(expect.any(RangeError), "for", {"id": "billCorrupted", "date": "avion"})})
       })
     })
     describe("When an error occurs on API", () => {

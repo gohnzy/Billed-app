@@ -75,8 +75,6 @@ describe("Given I am connected as an employee", () => {
           file
         )
         fireEvent.submit(form)
-
-        await new Promise(resolve => setTimeout(resolve, 1000));
         expect(global.alert).not.toHaveBeenCalled()
       })
     })
@@ -92,7 +90,6 @@ describe("Given I am connected as an employee", () => {
           fileInput,
           file
         )
-        await new Promise(resolve => setTimeout(resolve, 1000));
         expect(global.alert).toHaveBeenCalledWith("Le justificatif doit être une image (format png, jpg ou jpeg uniquement)")
       })
     })
@@ -138,12 +135,12 @@ describe("Given I am connected as an employee", () => {
           file
         )
         fireEvent.submit(form)
-        await new Promise(resolve => setTimeout(resolve, 1000));
-
-        expect(fetch).toHaveBeenCalledWith(expect.any(String), expect.objectContaining({"method": "POST"}))
-        expect(fetch).toHaveBeenCalledWith(expect.any(String), expect.objectContaining({"method": "PATCH"}))
-        expect(location.hash).toEqual("#employee/bills")
-
+        await waitFor(() => {
+          expect(fetch).toHaveBeenCalledWith(expect.any(String), expect.objectContaining({"method": "POST"}))
+          expect(fetch).toHaveBeenCalledWith(expect.any(String), expect.objectContaining({"method": "PATCH"}))
+          expect(location.hash).toEqual("#employee/bills")
+        })
+        
       })
     })
     describe("When new bill form is filled correctly and I click on send", () => {
@@ -157,10 +154,11 @@ describe("Given I am connected as an employee", () => {
         await waitFor(() => {
           screen.getByTestId("datepicker")
           screen.getByTestId("amount")
+          screen.getByTestId("form-new-bill")
         })
 
         const form = screen.getByTestId("form-new-bill")
-        expect(form).toBeInTheDocument()
+        await waitFor(() => {expect(form).toBeInTheDocument()})
         const nameField = screen.getByTestId("expense-name")
         const dateField = screen.getByTestId("datepicker")
         const amountField = screen.getByTestId("amount")
@@ -188,7 +186,6 @@ describe("Given I am connected as an employee", () => {
           file
         )
         fireEvent.submit(form)
-        await new Promise(resolve => setTimeout(resolve, 1000));
 
         const datasToBody =`{\"type\":\"Transports\",\"name\":\"${nameField.value}\",\"amount\":${amountField.value},\"date\"\:\"${dateField.value}\",\"vat\":\"\",\"pct\":${VATInput.value},\"commentary\":\"\",\"fileName\":\"${fileInput.files[0].name}\",\"status\":\"pending\"}`
         expect(fetch).toHaveBeenCalledWith(
@@ -202,7 +199,7 @@ describe("Given I am connected as an employee", () => {
             }
           })
         );       
-        expect(fetch).toHaveBeenNthCalledWith(
+        await waitFor(() => {expect(fetch).toHaveBeenNthCalledWith(
           2,
           'http://localhost:5678/bills/undefined',
           expect.objectContaining({
@@ -214,6 +211,7 @@ describe("Given I am connected as an employee", () => {
           })
         );
         expect(location.hash).toEqual("#employee/bills")
+        })
       })
     })
 
@@ -313,8 +311,6 @@ describe("Given I am connected as an employee", () => {
 
         fireEvent.submit(form)
 
-        await new Promise(resolve => setTimeout(resolve, 1000));
-
         expect(fetch).not.toHaveBeenCalledWith()
         expect(global.alert).toHaveBeenCalledWith('Le justificatif doit être une image (format png, jpg ou jpeg uniquement)')
         expect(location.hash).toEqual("#employee/bill/new")
@@ -365,8 +361,6 @@ describe("Given I am connected as an employee", () => {
 
         fireEvent.submit(form)
 
-        await new Promise(resolve => setTimeout(resolve, 1000));
-
         expect(fetch).not.toHaveBeenCalledWith()
         expect(location.hash).toEqual("#employee/bill/new")
       })
@@ -413,8 +407,6 @@ describe("Given I am connected as an employee", () => {
 
         fireEvent.submit(form)
 
-        await new Promise(resolve => setTimeout(resolve, 1000));
-
         expect(fetch).not.toHaveBeenCalledWith()
         expect(location.hash).toEqual("#employee/bill/new")
       })
@@ -460,8 +452,6 @@ describe("Given I am connected as an employee", () => {
         )
 
         fireEvent.submit(form)
-
-        await new Promise(resolve => setTimeout(resolve, 1000));
 
         expect(fetch).not.toHaveBeenCalledWith()
         expect(location.hash).toEqual("#employee/bill/new")
